@@ -8,43 +8,37 @@ const scrapeIt = require("scrape-it")
 const j2c = require('json2csv');
 
 // ==================== Configuration and global variables
-const entryURL = "http://shirts4mike.com/shirts.php";
+const baseURL = "http://shirts4mike.com/";
 
 
 
 
 // ==================== Scrape the website
  
-// Promise interface
-// scrapeIt("https://ionicabizau.net", {
-//     title: ".header h1"
-//   , desc: ".header h2"
-//   , avatar: {
-//         selector: ".header img"
-//       , attr: "src"
-//     }
-// }).then(page => {
-//     console.log(page)
-// })
- 
-// Callback interface
-scrapeIt(entryURL, {
+// scrape main page for shirt urls
+scrapeIt(baseURL + "shirts.php", {
     // Fetch the links to individual pages
     pages: {
         listItem: ".products li",
-      name: "pages",
-      data: {
+        name: "pages",
+        data: {
             url: {
-                selector: "a"
-              , attr: "href"
+                selector: "a",
+                attr: "href"
             }
         }
     }
-}, (err, page) => {
-    console.log(err || page)
 })
+.then(data => {
+    // data
+    data.pages.forEach(page => {
+        console.log(page.url);
+    });
 
 
+}, err => {
+    console.error(`There was a problem reaching ${entryURL}`);
+})
 
 // ==================== Convert Data stream to json
 
@@ -56,7 +50,7 @@ if (!fs.existsSync("data/")) {
         console.log("succesfully created data folder");
     });
 } else {
-    console.log("'data' folder already exists, leaving intact");
+    console.log(`"data" folder already exists, leaving intact`);
 }
 
 
