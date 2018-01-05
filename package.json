@@ -1,0 +1,33 @@
+{
+  "name": "content-scraper",
+  "version": "1.0.0",
+  "description": "Basic web content scraper used for specific website",
+  "main": "scraper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node scraper.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/randyL78/content_scraper.git"
+  },
+  "keywords": [
+    "content",
+    "scraper",
+    "content_scraper",
+    "website_data",
+    "data",
+    "mike",
+    "frog"
+  ],
+  "author": "Randy Layne <randydavidl78@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/randyL78/content_scraper/issues"
+  },
+  "homepage": "https://github.com/randyL78/content_scraper#readme",
+  "dependencies": {
+    "json2csv": "^3.11.5",
+    "scrape-it": "^4.1.2"
+  }
+}
