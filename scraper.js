@@ -13,7 +13,20 @@ const emitter = new events.EventEmitter();
 // ==================== Configuration and global variables
 const baseURL = "http://shirts4mike.com/";
 const time = new Date();
+const fields = ['Title','Price','ImageURL', 'URL', 'Time'];
 let csv=[];
+
+
+// ==================== Error Handler
+handleErrorSave = err => {
+    console.error(err.message);
+    msg = `[${time}] ${err}`;
+    fs.writeFile("scraper-error.log", msg, err => {
+        if (err) {
+            console.error("Unable to save the error log");
+        } 
+    });
+}
 
 // ==================== Scrape main site for shirt urls
 scrapeIt(baseURL + "shirts.php", {
@@ -28,6 +41,9 @@ scrapeIt(baseURL + "shirts.php", {
             }
         }
     }
+})
+.catch( err => {
+    throw new Error(`Cannot connect to ${baseURL + "shirts.php"}`);
 })
 // ==================== Get shirt data
 // cycle through each scraped url and fetch data for each shirt
@@ -53,7 +69,7 @@ scrapeIt(baseURL + "shirts.php", {
                 emitter.emit("complete");
             }
         }).catch( err => {
-            console.error(err.message);
+            handleErrorSave(new Error(`There was a problem creating the "data" directory`));
         })
     })
 })
@@ -62,7 +78,7 @@ scrapeIt(baseURL + "shirts.php", {
     // Create a 'data' folder if none exists
     if (!fs.existsSync("data/")) {
         fs.mkdir("data/", (err) => {
-            if (err) throw new Error("Problem creating directory");
+            if (err) handleErrorSave(new Error("Problem creating directory"));
             console.log("succesfully created data folder");
         });
     } else {
@@ -71,19 +87,36 @@ scrapeIt(baseURL + "shirts.php", {
 }).then( () => {
 // ==================== Create an event handler for when last item is pushed to array
     emitter.on("complete", () => {
+        try {
+            let dateString = `${time.getFullYear()}-${
+                                (time.getMonth() < 9) ? "0" + (time.getMonth() + 1): time.getMonth() +1
+                                }-${
+                                (time.getDate() < 9) ? "0" + (time.getDate() + 1): time.getDate() +1
+                                } `;
 
-
-
+            // ==================== Convert Data to json
+            let result = j2c({ data: csv, fields: fields });
+            fs.writeFile(`data/${dateString}.csv`, result, err => {
+                if (err) {
+                    handleErrorSave(new Error("Cannot save to file, file may be open in another Application"));
+                } else {
+                    console.log("File saved!");
+                }
+            });
+        } catch (err) {
+            handleErrorSave(new Error("There was a problem converting the data to JSON"));
+        }
+       
     });
 })
 
-// =================== Handle errors
+// =================== Catch any missed errors
 
 .catch( err => {
-    console.error(err.message);
+    handleErrorSave(err);
 })
 
-// ==================== Convert Data stream to json
+
 
 
 
