@@ -88,3 +88,4 @@ $RECYCLE.BIN/
 # project specific files
 .data/
 .data/*
+*.log

@@ -20,12 +20,20 @@ let csv=[];
 // ==================== Error Handler
 handleErrorSave = err => {
     console.error(err.message);
-    msg = `[${time}] ${err}`;
-    fs.writeFile("scraper-error.log", msg, err => {
-        if (err) {
-            console.error("Unable to save the error log");
-        } 
-    });
+    msg = `[${time}] ${err} \r\n`;
+    if (fs.existsSync("scraper-error.log")) {
+        fs.appendFileSync("scraper-error.log", msg, err => {
+            if (err) {
+                console.error("Unable to save the error log");
+            } 
+        });       
+    } else {
+        fs.writeFile("scraper-error.log", msg, err => {
+            if (err) {
+                console.error("Unable to save the error log");
+            } 
+        });
+    }
 }
 
 // ==================== Scrape main site for shirt urls
@@ -111,7 +119,6 @@ scrapeIt(baseURL + "shirts.php", {
 })
 
 // =================== Catch any missed errors
-
 .catch( err => {
     handleErrorSave(err);
 })
