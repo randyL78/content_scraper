@@ -25,13 +25,13 @@ handleErrorSave = err => {
         fs.appendFileSync("scraper-error.log", msg, err => {
             if (err) {
                 console.error("Unable to save the error log");
-            } 
-        });       
+            }
+        });
     } else {
         fs.writeFile("scraper-error.log", msg, err => {
             if (err) {
                 console.error("Unable to save the error log");
-            } 
+            }
         });
     }
 }
@@ -58,20 +58,20 @@ scrapeIt(baseURL + "shirts.php", {
 .then(data => {
     if(!data) throw new Error(`No urls recovered, please check your internet connection or ${baseURL} may be down`);
     data.pages.forEach(page => {
-       scrapeIt(baseURL + page.url, { 
+       scrapeIt(baseURL + page.url, {
             Title: {
                 selector: "img",
                 attr    : "alt"
             },
             Price: ".price",
-            ImageURL: { 
+            ImageURL: {
                 selector: "img",
                 attr    : "src"
             }
         }).then(shirt => {
             shirt.URL    = baseURL + page.url;
             shirt.Time   = new Date();
-           
+
             csv.push(shirt);
             if (csv.length === data.pages.length) {
                 emitter.emit("complete");
@@ -99,7 +99,7 @@ scrapeIt(baseURL + "shirts.php", {
             let dateString = `${time.getFullYear()}-${
                                 (time.getMonth() < 9) ? "0" + (time.getMonth() + 1): time.getMonth() +1
                                 }-${
-                                (time.getDate() < 9) ? "0" + (time.getDate() + 1): time.getDate() +1
+                                (time.getDate() < 9) ? "0" + (time.getDate()): time.getDate()
                                 } `;
 
             // ==================== Convert Data to json
@@ -114,7 +114,7 @@ scrapeIt(baseURL + "shirts.php", {
         } catch (err) {
             handleErrorSave(new Error("There was a problem converting the data to JSON"));
         }
-       
+
     });
 })
 
@@ -122,17 +122,3 @@ scrapeIt(baseURL + "shirts.php", {
 .catch( err => {
     handleErrorSave(err);
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
