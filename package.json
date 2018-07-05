@@ -28,6 +28,6 @@
   "homepage": "https://github.com/randyL78/content_scraper#readme",
   "dependencies": {
     "json2csv": "^4.1.5",
-    "scrape-it": "^4.1.2"
+    "scrape-it": "^5.0.5"
   }
 }
