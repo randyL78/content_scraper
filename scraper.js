@@ -37,6 +37,32 @@ handleErrorSave = err => {
     }
 }
 
+
+// scrape an individual shirt page
+const scrapeShirt = (page, index, pages) => {
+    scrapeIt(baseURL + page.url, {
+        Title: {
+            selector: "img",
+            attr    : "alt"
+        },
+        Price: ".price",
+        ImageURL: {
+            selector: "img",
+            attr    : "src"
+        }
+    }).then(shirtdata => {
+        const shirt = shirtdata.data;
+        shirt.URL    = baseURL + page.url;
+        shirt.Time   = new Date();
+        csv.push(shirt);
+        if (csv.length === pages.length) {
+            emitter.emit("complete");
+        }
+    }).catch( err => {
+        handleErrorSave(new Error(`There was a problem creating the shirt data`));
+    })
+}
+
 // ==================== Scrape main site for shirt urls
 scrapeIt(baseURL + "shirts.php", {
     // Fetch the links to individual pages
@@ -58,29 +84,9 @@ scrapeIt(baseURL + "shirts.php", {
 // cycle through each scraped url and fetch data for each shirt
 .then(data => {
     if(!data) throw new Error(`No urls recovered, please check your internet connection or ${baseURL} may be down`);
-    data.data.pages.forEach(page => {
-       scrapeIt(baseURL + page.url, {
-            Title: {
-                selector: "img",
-                attr    : "alt"
-            },
-            Price: ".price",
-            ImageURL: {
-                selector: "img",
-                attr    : "src"
-            }
-        }).then(shirtdata => {
-            const shirt = shirtdata.data;
-            shirt.URL    = baseURL + page.url;
-            shirt.Time   = new Date();
-            csv.push(shirt);
-            if (csv.length === data.data.pages.length) {
-                emitter.emit("complete");
-            }
-        }).catch( err => {
-            handleErrorSave(new Error(`There was a problem creating the shirt data`));
-        })
-    })
+
+    // Scrape individual shirt url
+    data.data.pages.forEach(scrapeShirt);  
 })
 .then( () => {
 // ==================== Prepare the directory for incoming files
