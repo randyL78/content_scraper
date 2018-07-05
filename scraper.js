@@ -5,7 +5,7 @@ const fs = require('fs');
 // third party content scraper tool
 const scrapeIt = require("scrape-it")
 // transpiler to convert json data to a csv file
-const j2c = require('json2csv');
+const J2cParcer = require('json2csv').Parser;
 // my way around the async problem
 const events = require('events');
 const emitter = new events.EventEmitter();
@@ -14,6 +14,7 @@ const emitter = new events.EventEmitter();
 const baseURL = "http://shirts4mike.com/";
 const time = new Date();
 const fields = ['Title','Price','ImageURL', 'URL', 'Time'];
+const j2cParcer = new J2cParcer({fields});
 let csv=[];
 
 
@@ -103,7 +104,7 @@ scrapeIt(baseURL + "shirts.php", {
                                 } `;
 
             // ==================== Convert Data to json
-            let result = j2c({ data: csv, fields: fields });
+            let result = j2cParcer.parse(csv);
             fs.writeFile(`data/${dateString}.csv`, result, err => {
                 if (err) {
                     handleErrorSave(new Error("Cannot save to file, file may be open in another Application"));
@@ -112,7 +113,9 @@ scrapeIt(baseURL + "shirts.php", {
                 }
             });
         } catch (err) {
+            console.log(err);
             handleErrorSave(new Error("There was a problem converting the data to JSON"));
+
         }
 
     });
