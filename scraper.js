@@ -62,7 +62,7 @@ const scrapeShirt = (page, index, pages) => {
         handleErrorSave(new Error(`There was a problem creating the shirt data`));
     })
 }
-
+//
 // ==================== Scrape main site for shirt urls
 scrapeIt(baseURL + "shirts.php", {
     // Fetch the links to individual pages
